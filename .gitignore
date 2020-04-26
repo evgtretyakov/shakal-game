@@ -2,3 +2,4 @@
 .htaccess
 old/
 sqls.txt
+app/node_modules
