@@ -441,6 +441,23 @@ class BoardController
         // $figure->move_locked; // 0 - not continue; 1 - continue without control; 2 - with control
 
 
+        // form tiles with figures
+        // form players_info
+        // form turn
+        // form move_locked
+
+        // update
+          // update games
+          // update board_
+          // update players_
+        // return
+          // return tiles
+            // on each tile figures
+          // return turn
+          // return players_info if changed
+          // return move_locked
+
+
 //        $players_info = [];
 
 //        Handler::Respond([$was_closed]);
