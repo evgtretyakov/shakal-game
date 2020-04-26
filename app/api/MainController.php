@@ -201,6 +201,7 @@ class Handler
     }
 
     public static function moveFigure($obj) {
+        // TODO refactor code
         if (!(array)$obj->active_figure) {
             $error_msg = 'Не передан выбранный пират. ';
             self::Respond([], 48, $error_msg);
