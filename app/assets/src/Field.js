@@ -102,14 +102,14 @@ export default class Field extends React.Component{
                   let is_my_turn = result.turn == prevState.player_num;
                   prevState.tiles[result.old_tile_id].figures = result.old_tile_figures;
                   prevState.tiles[result.new_tile_id] = result.new_tile;
-                  console.log(result.updated_tiles);
+                  // console.log(result.updated_tiles);
                   if (result.updated_tiles.length != []) {
                     {Object.keys(result.updated_tiles).map((key, value) => {
                       console.log('key = ' + key);
                       console.log('value = ' + value);
                       console.log(prevState.tiles[key].figures);
                       console.log(result.updated_tiles[key].figures);
-                      prevState.tiles[key].figures = result.updated_tiles[key].figures;
+                      prevState.tiles[key] = result.updated_tiles[key];
                     })}
                   }
                   return {
@@ -119,6 +119,9 @@ export default class Field extends React.Component{
                     move_locked: result.move_locked
                   };
                 });
+                if (result.show_alert != undefined && result.show_alert != '') {
+                  this.props.showError(result.show_alert);
+                }
                 this.changeTurn(result.turn);
               } else {
                 this.props.showError('Ход невозможен: ' + result.block_reason);

@@ -267,6 +267,13 @@ div.chat-name {
 
 // tile types
 
+.tile-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: rotate(-34deg);
+}
+
 .tile-icon {
     font-size: 2em;
     width: 100%;

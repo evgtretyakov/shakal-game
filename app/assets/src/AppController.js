@@ -33,7 +33,8 @@ class AppController extends Component {
     user_id: sessionStorage.getItem('user_id'),
     player_num: 0,
     turn: 0,
-    max_players: 0
+    max_players: 0,
+    show_all_tiles: 0
   };
 
   componentDidMount() {
@@ -213,7 +214,8 @@ class AppController extends Component {
     let data = {
       req: 'continueTheGame',
       name: this.state.name,
-      session_id: this.state.session_id
+      session_id: this.state.session_id,
+      show_all_tiles: this.state.show_all_tiles
     };
     fetch("/ajax", {
       method: 'POST',
@@ -249,6 +251,14 @@ class AppController extends Component {
     }
   };
 
+  changeShowAllTiles = () => {
+    this.setState(prevState => {
+      return {
+        show_all_tiles: prevState.show_all_tiles == 1 ? 0 : 1
+      }
+    })
+  };
+
   render() {
 
     // let cookieName = this.cookies.get('name');
@@ -271,6 +281,7 @@ class AppController extends Component {
       queue_players,
       game_date,
       loading,
+      show_all_tiles
     } = this.state;
 
     return (
@@ -287,6 +298,7 @@ class AppController extends Component {
             turn={turn}
             max_players={max_players}
             showError={this.showError}
+            show_all_tiles={show_all_tiles}
           />
           : null
         }
@@ -309,6 +321,8 @@ class AppController extends Component {
             updatePlayersList={this.updatePlayersList}
             showError={this.showError}
             loading={loading}
+            changeShowAllTiles={this.changeShowAllTiles}
+            show_all_tiles={show_all_tiles}
           />
           : null
         }

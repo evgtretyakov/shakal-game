@@ -1,21 +1,12 @@
 <?php
 
-//if (!$link) {
-//    echo "Ошибка: Невозможно установить соединение с MySQL." . PHP_EOL;
-//    echo "Код ошибки errno: " . mysqli_connect_errno() . PHP_EOL;
-//    echo "Текст ошибки error: " . mysqli_connect_error() . PHP_EOL;
-//    exit;
-//}
-
-//echo "Соединение с MySQL установлено!" . PHP_EOL;
-//echo "Информация о сервере: " . mysqli_get_host_info($link) . PHP_EOL;
-
-//mysqli_close($link);
-
 require "UsersController.php";
 require "GameController.php";
 require "BoardController.php";
 require "PlayersController.php";
+
+// TODO:
+// убиться об корабль
 
 class Handler
 {
@@ -185,6 +176,10 @@ class Handler
     public static function continueTheGame($obj) {
         $session_id = $obj->session_id;
         $link = self::ConnectToDB();
+        $show_tiles = false;
+        if (isset($obj->show_all_tiles)) {
+            $show_tiles = $obj->show_all_tiles == 1;
+        }
         $user = UsersController::getUserByName($obj->name, $link);
         $game = GameController::getGameById($user['game'], $link);
         $response = [];
@@ -195,7 +190,7 @@ class Handler
                     $error_msg = 'Игрок в игре не найден. ' . mysqli_error($link);
                     self::Respond([], 32, $error_msg);
                 } else {
-                    GameController::gameStarted($game, $player_num, $link, true);
+                    GameController::gameStarted($game, $player_num, $link, true, $show_tiles);
                 }
             }
         } else {
@@ -220,9 +215,9 @@ class Handler
         $session_id = $obj->session_id;
         $figure = $obj->active_figure; // TODO check if all data is safety
 
-//        if ($figure->type == 'ship') {
-//            $figure->alive = 1; // ship must be alive to go
-//        }
+        if ($figure->type == 'ship') {
+            $figure->alive = 1; // ship must be alive to go
+        }
 
         $figure->move_locked = 0; // locked for some cases
 
@@ -237,7 +232,7 @@ class Handler
         $p_num = $figure->p_num;
         $new_tile = $tiles[$obj->id]; // we are doing it in case if there are other pirates
         if ($new_tile['closed'] == 1) { // now we change it in case if it closed (because we can't check the closed tile
-            $new_tile = BoardController::getTileById($obj->id, $game, $link); // must work
+            $new_tile = BoardController::getTileById($obj->id, $game['ts'], $link); // must work
             $new_tile['was_closed'] = 1; // fix problems
         } else {
             $new_tile['was_closed'] = 0; // fix problems

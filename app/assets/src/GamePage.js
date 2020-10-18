@@ -39,7 +39,7 @@ export default class GamePage extends Component {
   render() {
 
 
-    let { logOut }  = this.props;
+    let { logOut, showError }  = this.props;
 
     let { infinity, player_num, max_players, player_name, game_id, players_info, tiles, turn, move_locked }  = this.state;
 
@@ -65,7 +65,7 @@ export default class GamePage extends Component {
           game_id={game_id}
           changeTurn={this.changeTurn}
           changePlayersInfo={this.changePlayersInfo}
-          showError={this.props.showError}
+          showError={showError}
           infinity={infinity}
           move_locked={move_locked}
         />

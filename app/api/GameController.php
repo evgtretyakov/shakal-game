@@ -220,9 +220,9 @@ class GameController
         }
     }
 
-    public static function gameStarted($game, $player_num, $link, $need_update = false) {
+    public static function gameStarted($game, $player_num, $link, $need_update = false, $show_tiles = false) {
         // get player_info and place figures
-        $game_info = PlayersController::getPlayersInfo($game['ts'], false, false, $link);
+        $game_info = PlayersController::getPlayersInfo($game['ts'], false, false, $link, $show_tiles);
 
         $response = [
             'game_started' => 1,

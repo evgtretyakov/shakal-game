@@ -84,8 +84,7 @@ export default class Tile extends React.Component{
         // icon = <div className="ordinary-tile">{id}</div>;
         icon = null;
     }
-    // console.log(id);
-    // console.log(figures);
+
     return(
       <ClickNHold
         time={1.5} // Time to keep pressing. Default is 2
@@ -95,7 +94,7 @@ export default class Tile extends React.Component{
       >
         <div className={"field-cell cell-" + type} onDoubleClick={() => moveFigure(id)}>
           <div className={"tile-icon-block direction_" + direction + "_p" + player_num}>{icon}</div>
-
+          <span className="tile-text">{id}</span>
           {closed == 0
             ? figures.map((value, key) => {
               let count = figures.length;

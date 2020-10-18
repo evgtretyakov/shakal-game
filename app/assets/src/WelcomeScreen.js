@@ -7,7 +7,8 @@ import GameQueue from "./GameQueue";
 export default class WelcomeScreen extends Component {
 
   state = {
-    game_started: 0
+    game_started: 0,
+    show_all_tiles: 0
   };
 
   handleLoginSubmit = (name) => {
@@ -31,7 +32,7 @@ export default class WelcomeScreen extends Component {
 
   render() {
 
-    let { continueTheGame, updatePlayersList, showContinue, showQueue, logged_in, name, queue_players, game_date, game_id, session_id, user_id, loading }= this.props;
+    let { continueTheGame, updatePlayersList, changeShowAllTiles, showContinue, showQueue, logged_in, name, queue_players, game_date, game_id, session_id, user_id, loading, show_all_tiles }= this.props;
 
     // startCheckingGameReady(this.state.game_started);
 
@@ -67,8 +68,8 @@ export default class WelcomeScreen extends Component {
               {showContinue
                 ? <Button variant="info" size="lg" block onClick={continueTheGame} disabled={loading}>Продолжить игру от {game_date}</Button>
                 : null
-
               }
+              <Button active={show_all_tiles == 1} size="lg" variant="primary" block onClick={changeShowAllTiles}>{show_all_tiles == 1 ? 'Выкл.' : 'Вкл.'} клетки</Button>
             </React.Fragment>
           }
           <br/>

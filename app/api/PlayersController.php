@@ -294,14 +294,14 @@ class PlayersController
         return $player_num;
     }
 
-    public static function getPlayersInfo($ts, $players, $tiles, $link) {
+    public static function getPlayersInfo($ts, $players, $tiles, $link, $show_all_tiles = false) {
         if (!$players) {
             // get ships, pirates
             $players = self::getPlayers($ts, $link);
         }
         if (!$tiles) {
             // get tiles
-            $tiles = BoardController::getTiles($ts, $link);
+            $tiles = BoardController::getTiles($ts, $link, $show_all_tiles);
         } else {
             $tiles = [];
         }
