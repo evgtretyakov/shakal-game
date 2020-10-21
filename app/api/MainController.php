@@ -7,6 +7,7 @@ require "PlayersController.php";
 
 // TODO:
 // убиться об корабль
+// проверить убийство в яме
 
 class Handler
 {
@@ -230,6 +231,8 @@ class Handler
         $old_tile = $tiles[$figure->tile];
         BoardController::checkFigureOnTile($figure, $tiles[$figure->tile]); // check if pirate is ok
         $p_num = $figure->p_num;
+
+        $player_info = PlayersController::getPlayerById($p_num, $game['ts'], $link);
         $new_tile = $tiles[$obj->id]; // we are doing it in case if there are other pirates
         if ($new_tile['closed'] == 1) { // now we change it in case if it closed (because we can't check the closed tile
             $new_tile = BoardController::getTileById($obj->id, $game['ts'], $link); // must work
@@ -238,14 +241,74 @@ class Handler
             $new_tile['was_closed'] = 0; // fix problems
         }
 
+        if ($player_info['is_lighthouse'] > 0) { // Lighthouse show tiles
+            $response = [];
+            if ($player_info['is_lighthouse'] > 1) {
+                if ($new_tile['was_closed'] == 1) {
+                    $player_info['is_lighthouse'] -= 1;
+                    PlayersController::setLighthouse($game['ts'], $figure->p_num, $player_info['is_lighthouse'], $link);
+                    $updated_tiles = [];
+                    $new_tile['figures'] = [];
+                    $updated_tiles[$new_tile['id']] = $new_tile;
+                    $show_alert = $player_info['is_lighthouse'] == 1 ? 'Вы подглядели все 4 клетки. Нажмите кнопку "Покинуть маяк"' : "Вам осталось подглядеть клеток: " . ($player_info['is_lighthouse'] - 1);
+                    $game_info = PlayersController::getPlayersInfo($game['ts'], false, true, $link);
+                    $old_tile_figures = $game_info['tiles'][$old_tile['id']]['figures'];
+                    $response = [
+                        'old_tile_id' => $old_tile['id'],
+                        'new_tile_id' => $new_tile['id'],
+                        'new_tile' => $new_tile,
+                        'figure' => $figure,
+                        'turn' => $game['turn'],
+                        'moved' => 1,
+                        'players_info_changed' => false,
+                        'players_info' => $game_info['players_info'],
+                        'was_closed' => 1,
+                        'move_locked' => 1,
+                        'updated_tiles' => $updated_tiles,
+                        'old_tile_figures' => $old_tile_figures,
+                        'show_alert' => $show_alert,
+                    ];
+                } else {
+                    self::Respond([
+                        'moved' => 0,
+                        'block_reason' => 'Выберите неоткрытую клетку для подглядывания'
+                    ]);
+                }
+            } else {
+                if (isset($obj->lighthouse_end) && $obj->lighthouse_end == 1) {
+                    $player_info['is_lighthouse'] -= 1;
+                    $updated_tiles = [];
+                    $turn = $game['turn'] == 4 ? 1 : $game['turn'] + 1; // next turn
+                    PlayersController::setLighthouse($game['ts'], $figure->p_num, $player_info['is_lighthouse'], $link);
+                    $game_info = PlayersController::getPlayersInfo($game['ts'], false, true, $link);
+                    $old_tile_figures = $game_info['tiles'][$old_tile['id']]['figures'];
+                    $old_tile['figures'] = [$figure];
+                    $response = [
+                        'old_tile_id' => $old_tile['id'],
+                        'new_tile_id' => $old_tile['id'],
+                        'new_tile' => $old_tile,
+                        'figure' => $figure,
+                        'turn' => $turn,
+                        'moved' => 1,
+                        'players_info_changed' => false,
+                        'players_info' => $game_info['players_info'],
+                        'was_closed' => 0,
+                        'move_locked' => 0,
+                        'updated_tiles' => $updated_tiles,
+                        'old_tile_figures' => $old_tile_figures,
+                        'show_alert' => ""
+                    ];
+                    BoardController::makeTurnAndUserUpdated($game['id'], $p_num, $response['turn'], $link);
+                } else {
+                    self::Respond([
+                        'moved' => 0,
+                        'block_reason' => 'Нажмите кнопку "Покинуть маяк"'
+                    ]);
+                }
+            }
+            self::Respond($response);
+        }
 
-
-//        $new_tile = $tiles[$obj->id];
-//        $new_tile = BoardController::getTileById($obj->id, $game, $link);
-//        $old_tile = BoardController::getTileById($figure->tile, $game, $link);
-        $player_info = PlayersController::getPlayerById($p_num, $game['ts'], $link);
-//        $player_info = $players_info[$p_num];
-//        Handler::Respond([$player_info]);
         $check_move = BoardController::checkCanMove($new_tile, $old_tile, $figure, $game, $user, $player_info, $link);
         if ($check_move) { // check CanMove response ok
             if ($check_move['moved'] == 1) { // can move

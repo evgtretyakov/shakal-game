@@ -1,6 +1,8 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faCoins, faGem, faWineBottle, faTimes } from '@fortawesome/free-solid-svg-icons'
+import LogOutButton from "./LogOutButton";
+import Button from "react-bootstrap/Button";
 
 export default class PlayerBlock extends React.Component{
 
@@ -45,7 +47,8 @@ export default class PlayerBlock extends React.Component{
       is_friday,
       is_missionary_drunk,
       is_weed,
-      is_lighthouse
+      is_lighthouse,
+      endLighthouse
     } = this.props;
 
     return(
@@ -81,11 +84,15 @@ export default class PlayerBlock extends React.Component{
               ? <span>WEED</span>
               : null
             }
-            {is_lighthouse
-              ? <span>L: {is_lighthouse}</span>
+            {is_lighthouse > 1
+              ? <span>L: {is_lighthouse - 1}</span>
               : null
             }
           </p>
+          {is_lighthouse == 1 && your_player
+            ? <Button variant={"primary"} onClick={endLighthouse} className="endlighthouse-button">Покинуть маяк</Button>
+            : null
+          }
         </div>
       </div>
     )

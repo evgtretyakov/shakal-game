@@ -20,26 +20,26 @@ $types = [
     'arrow4',
     'arrow4d',
     'arrow4d',
-    'arrow4d',
+    'arrow4d', // +
     'fort',
-    'fort',
-    'fort_sex',
-    'cannibal',
+    'fort', // +
+    'fort_sex', // +
+    'cannibal', // +
     'rum1',
     'rum1',
     'rum1',
     'rum2',
     'rum2',
-    'rum3',
+    'rum3', // +
     'rum_barrel',
     'rum_barrel',
     'rum_barrel',
-    'rum_barrel',
+    'rum_barrel', // +
     'chest',
-    'caramba',
-    'lighthouse',
+    'caramba', // +
+    'lighthouse', // +
     'balloon',
-    'balloon',
+    'balloon', // +
     'lava',
     'friday',
     'missionary',
@@ -87,17 +87,17 @@ $types = [
     'cave',
     'trap',
     'trap',
-    'trap',
+    'trap', // +
     'crocodile',
     'crocodile',
     'crocodile',
-    'crocodile',
+    'crocodile', // +
     'ice',
     'ice',
     'ice',
     'ice',
     'ice',
-    'ice',
+    'ice', // +
     'grass1',
     'grass1',
     'grass1',
@@ -115,6 +115,20 @@ $types = [
     'grass4',
     'grass4',
     'grass4',
-    'grass4',
+    'grass4', // +
     'helicopter'
 ]; // end in 120 line always
+
+//    'lava',
+//    'friday',
+//    'missionary',
+//    'ben',
+//    'cannon',
+//    'coins1',
+//    'carousel2',
+//    'horses',
+//    'weed',
+//    'jungle',
+//    'cave',
+//    'helicopter'
+//    'chest',

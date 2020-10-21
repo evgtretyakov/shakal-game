@@ -95,7 +95,7 @@ export default class Tile extends React.Component{
         <div className={"field-cell cell-" + type} onDoubleClick={() => moveFigure(id)}>
           <div className={"tile-icon-block direction_" + direction + "_p" + player_num}>{icon}</div>
           <span className="tile-text">{id}</span>
-          {closed == 0
+          {closed == 0 && figures != undefined
             ? figures.map((value, key) => {
               let count = figures.length;
               count = value.aboard == 1 ? count - 1 : count;

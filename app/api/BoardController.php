@@ -254,10 +254,22 @@ class BoardController
         }
     }
 
+    /**
+     * @param $ts
+     * @param $figure
+     * @param $tile
+     * @param $old_tile
+     * @param $player_info
+     * @param $players_info
+     * @param $link
+     *
+     * @return array
+     */
     public static function checkNewTile($ts, $figure, $tile, $old_tile, $player_info, $players_info, $link) {
 //        $player_info = $players_info[$figure->p_num];
         $show_alert = '';
         $kill_pirates = [];
+        $updated_tiles = [];
         $move_locked = 0;
         $new_figure = [];
         $reverse_move = false;
@@ -345,6 +357,10 @@ class BoardController
                         $show_alert = "Йо-хо-хо! " . $add_rum;
                         PlayersController::useRum($ts, $figure->p_num, (intval($player_info['rum']) + $rum), $link); // add rum
                     }
+                } else if ($tile['type'] == 'lighthouse') {
+                    PlayersController::setLighthouse($ts, $figure->p_num, 5, $link);
+                    $move_locked = $figure->type;
+                    $show_alert = "Маяк! Можно подсмотреть 4 клетки!";
                 }
             }
             if (
@@ -381,7 +397,7 @@ class BoardController
                     }
                 }
             } else if ($tile['type'] == 'cannibal') {
-                $figure->alive = 0; // kill pirate
+                $figure->alive = 0; // remove pirate
                 $show_alert = "Пирата съел каннибал";
             } else if ($tile['type'] == 'rum_barrel') {
                 if ($figure->type == 'friday') {
@@ -400,11 +416,38 @@ class BoardController
                     PlayersController::rumDisablePirate($ts, $figure->p_num, $figure->type, $link); // rum disable pirate
                 }
             } else if ($tile['type'] == 'crocodile') {
-                $reverse_move = true;
+                $reverse_move = true; // move back
                 $tile['figures'] = [];
                 $show_alert = "AAA! Крокодил!";
             } else if ($tile['type'] == 'ice') {
-
+                $move_locked = $figure->type;
+            } else if ($tile['type'] == 'trap') {
+                $trapped = true;
+                if (isset($tile['figures'])) {
+                    foreach ($tile['figures'] as $tile_figure) {
+                        if ($tile_figure['p_num'] == $player_info['id']) { // if our pirate
+                            PlayersController::disablePirate($ts, $figure->p_num, $tile_figure['type'], false, $link); // enable pirate
+                            $trapped = false;
+                        }
+                    }
+                }
+                if ($figure->type != 'friday' && $trapped) {
+                    $figure->disabled = 1;
+                    $show_alert = "Пират попал в ловушку";
+                    PlayersController::disablePirate($ts, $figure->p_num, $figure->type, true, $link); // disable pirate
+                }
+            } else if ($tile['type'] == 'balloon') {
+                if ($tile['was_closed'] == 1) {
+                    self::openTile($tile['id'], $ts, $link);
+                }
+                $figure->aboard = 1;
+                $figure->water = 1;
+                $figure->tile = $player_info['ship_tile'];
+                $tile['figures'] = [];
+                $updated_tiles[$tile['id']] = $tile;
+                $tile = self::getTileById($player_info['ship_tile'], $ts, $link);
+                $kill_pirates[] = self::killThePirate($ts, $figure->p_num, $figure->type, false, $link, $player_info['ship_tile']); // kill figure attack_figure
+                // TODO enroll coin or chest to players score
             } else { // ordinary tile
 
             }
@@ -421,6 +464,7 @@ class BoardController
                     foreach ($tile['figures'] as $tile_figure) {
                         if ($tile_figure['p_num'] == $player_info['id'] || $tile['type'] == 'water') { // if our pirate
                             if (self::checkIfThereShip($ts, $tile['id'], $link) && $player_info['ship_tile'] != $tile['id']) { // there is enemy ship
+                                // TODO there is enemy ship remove pirate
                                 $figure->aboard = 1;
                                 $figure->water = 1;
                                 $figure->tile = $player_info['ship_tile'];
@@ -458,7 +502,8 @@ class BoardController
             'kill_pirates' => $kill_pirates,
             'prev_tile' => $old_tile,
             'reverse_move'=> $reverse_move,
-            'show_alert' => $show_alert
+            'show_alert' => $show_alert,
+            'updated_tiles' => $updated_tiles
             // TODO return $players_info_changed, changed $figure etc
         ];
     }
@@ -499,6 +544,9 @@ class BoardController
                 $updated_tiles[$rev_old_tile['id']] = $rev_old_tile;
             }
             $move_result = self::checkNewTile($ts, $move_result['figure'], $rev_new_tile, $rev_old_tile, $player_info, $players_info, $link);
+        }
+        foreach ($move_result['updated_tiles'] as $key => $updated_tile) {
+            $updated_tiles[$key] = $updated_tile;
         }
         $move_locked = $move_result['move_locked'];
         $figure = $move_result['figure']; // updated figure
@@ -972,7 +1020,7 @@ class BoardController
                 ];
                 $can_swim = true;
                 $reason = 'На льду можно проскальзить по предыдущей траектории';
-                $reason = 'Только на ' . $av_t;
+//                $reason = 'Только на ' . $av_t;
                 break;
             default:
                 $available_tiles = $default_tiles;

@@ -99,7 +99,11 @@ h2.player-active {
 
 .pirate_icon {
   margin: 0 5px;
-  position: relative; }
+  position: relative;
+  font-size: 2em; }
+
+.player-content p {
+  font-size: 1.5em; }
 
 .player_1 {
   color: #ffffff; }

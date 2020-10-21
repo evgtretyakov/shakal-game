@@ -356,4 +356,27 @@ class PlayersController
             Handler::Respond([], 61, 'Не удалось изменить алкогольное состояние пирата. ' . mysqli_error($link));
         }
     }
+
+    public static function disablePirate($ts, $p_num, $pirate, $disable, $link) {
+        $dis = $disable ? 1 : 0;
+        $sql = 'UPDATE players_' . $ts . ' SET 
+            `' . $pirate . '_disabled`= ' . $dis . '
+            WHERE `id`=' . $p_num;
+        if (mysqli_query($link, $sql)) {
+            return true;
+        } else {
+            Handler::Respond([], 62, 'Не удалось обездвижить пирата пирата. ' . mysqli_error($link));
+        }
+    }
+
+    public static function setLighthouse($ts, $p_num, $lh, $link) {
+        $sql = 'UPDATE players_' . $ts . ' SET 
+            `is_lighthouse`= ' . $lh . '
+            WHERE `id`=' . $p_num;
+        if (mysqli_query($link, $sql)) {
+            return true;
+        } else {
+            Handler::Respond([], 63, 'Не удалось устроить осмотр из маяка. ' . mysqli_error($link));
+        }
+    }
 }

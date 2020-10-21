@@ -11,7 +11,7 @@ export default class Header extends React.Component{
 
   render() {
 
-    let { logOut, changeInfinity, max_players, players_info, player_num, turn, infinity } = this.props;
+    let { logOut, changeInfinity, endLighthouse, max_players, players_info, player_num, turn, infinity } = this.props;
 
     return(
       <div className="header">
@@ -24,7 +24,7 @@ export default class Header extends React.Component{
             your_player={players_info[key].p_num == player_num}
             has_chest={players_info[key].has_chest == 1}
             is_weed={players_info[key].is_weed == 1}
-            is_lighthouse={players_info[key].is_lighthouse == 1}
+            is_lighthouse={players_info[key].is_lighthouse}
             p1_alive={players_info[key].p1_alive == 1}
             p2_alive={players_info[key].p2_alive == 1}
             p3_alive={players_info[key].p3_alive == 1}
@@ -32,6 +32,7 @@ export default class Header extends React.Component{
             is_missionary={players_info[key].is_missionary == 1}
             is_friday={players_info[key].is_friday == 1}
             is_missionary_drunk={players_info[key].is_missionary_drunk == 1}
+            endLighthouse={endLighthouse}
           />
         )}
         <LogOutButton
